@@ -8,5 +8,7 @@
 4. npm run test:repro
 
 `test:repro` runs tests
+
 `testSetup:repro` will run creation script. should work except for indexes. 
+
 `testFullSetup:repro` destroys and recreates DB, for indexes.

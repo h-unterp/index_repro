@@ -1,4 +1,4 @@
-***Lightweight testing setup for fauana***
+***Lightweight testing setup for fauna***
 
 **Instructions:**
 

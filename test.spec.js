@@ -9,11 +9,8 @@ describe(TOPIC, function () {
     adminClient = await generalTestSetup(TOPIC + "-spec");
   });
 
-  it("get no ads", async function () {
-    //ensure ads doesn't fail with 0 ads
-    return getAds(loggedInClient, Math.random()).then(async function (res) {
-      chai.expect(res[0]).to.deep.equal(NO_AD);
-    });
+  it("example test", async function () {
+    //do something
   });
 
 

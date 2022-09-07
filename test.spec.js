@@ -21,6 +21,7 @@ describe(TOPIC, function () {
   });
 
   it("after works", async function () {
+    //this works
     var res = await adminClient.query(
       Paginate(Match(Index("things_by_selectMe")), { size: 5 })
     );
@@ -42,7 +43,24 @@ describe(TOPIC, function () {
         { size: 5 }
       )
     );
-    //this returns 9-5
+    /*
+           this returns
+           {
+         after: [
+           'hi4',
+           Ref(Collection("things"), "342139790713421900"),
+           Ref(Collection("things"), "342139790713421900")
+         ],
+         data: [
+           [ 'hi9', Ref(Collection("things"), "342139791030091852") ],
+           [ 'hi8', Ref(Collection("things"), "342139790964031564") ],
+           [ 'hi7', Ref(Collection("things"), "342139790905311308") ],
+           [ 'hi6', Ref(Collection("things"), "342139790838202444") ],
+           [ 'hi5', Ref(Collection("things"), "342139790781579340") ]
+         ]
+       }
+    */
+
     console.log(res);
 
     var after = res.after[0];
@@ -55,7 +73,24 @@ describe(TOPIC, function () {
         { size: 5, after: after }
       )
     );
-    //this also returns 9-5, after does not work
+           /*this does not return the next 5 docs:
+           {
+         before: [ 'hi4' ],
+         after: [
+           'hi4',
+           Ref(Collection("things"), "342139790713421900"),
+           Ref(Collection("things"), "342139790713421900")
+         ],
+         data: [
+           [ 'hi9', Ref(Collection("things"), "342139791030091852") ],
+           [ 'hi8', Ref(Collection("things"), "342139790964031564") ],
+           [ 'hi7', Ref(Collection("things"), "342139790905311308") ],
+           [ 'hi6', Ref(Collection("things"), "342139790838202444") ],
+           [ 'hi5', Ref(Collection("things"), "342139790781579340") ]
+         ]
+       }
+    */
+
     console.log(res2);
   });
 });

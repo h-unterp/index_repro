@@ -10,15 +10,15 @@ const {
   CreateCollection,
   CreateIndex,
   Query,
-  Index
+  Index,
 } = faunadb.query;
 
 const CreateThingsCollection = CreateCollection({
   name: "things",
 });
 
-export const CreateIndexThings = CreateIndex({
-  name: "all_things",
+export const CreateIndexThingsSelect = CreateIndex({
+  name: "things_by_selectMe",
   source: [
     {
       collection: Collection("things"),
@@ -40,10 +40,26 @@ export const CreateIndexThings = CreateIndex({
   ],
 });
 
+export const CreateIndexThings = CreateIndex({
+  name: "all_things",
+  source: [
+    {
+      collection: Collection("things"),
+    },
+  ],
+  values: [
+    {
+      field: ["ref"],
+    },
+  ],
+});
+
 export const createThingsCollection = async function (client) {
   await client.query(
     If(Exists(Collection("things")), true, CreateThingsCollection)
   );
+  await client.query(
+    If(Exists(Index("things_by_selectMe")), true, CreateIndexThingsSelect)
+  );
   await client.query(If(Exists(Index("all_things")), true, CreateIndexThings));
 };
-

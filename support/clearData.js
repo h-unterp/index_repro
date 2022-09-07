@@ -33,8 +33,8 @@ export const deleteAll = async (client, childDbName) => {
     );
   } else {
     try {
-      const fids = await DeleteAll(client);
-      console.log(`Deleted: 1. fids: ${fids.data.length} `);
+      await DeleteAll(client);
+      console.log(`Deleted else: all`);
     } catch (err) {
       console.log("Error", err);
     }

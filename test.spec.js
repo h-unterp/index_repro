@@ -32,7 +32,7 @@ describe(TOPIC, function () {
     //console.log(res2);
   });
 
-  it("after works", async function () {
+  it("after does not work", async function () {
     var res = await adminClient.query(
       Paginate(
         Join(
@@ -42,6 +42,7 @@ describe(TOPIC, function () {
         { size: 5 }
       )
     );
+    //this returns 9-5
     console.log(res);
 
     var after = res.after[0];
@@ -54,6 +55,7 @@ describe(TOPIC, function () {
         { size: 5, after: after }
       )
     );
+    //this also returns 9-5, after does not work
     console.log(res2);
   });
 });

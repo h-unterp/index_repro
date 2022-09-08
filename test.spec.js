@@ -23,75 +23,42 @@ describe(TOPIC, function () {
   it("after works", async function () {
     //this works
     var res = await adminClient.query(
-      Paginate(Match(Index("things_by_selectMe")), { size: 5 })
+      Paginate(Match(Index("things_binding")), { size: 5 })
     );
     //console.log(res);
     var after = res.after[0];
     var res2 = await adminClient.query(
-      Paginate(Match(Index("things_by_selectMe")), { size: 5, after: after })
+      Paginate(Match(Index("things_binding")), { size: 5, after: after })
     );
     //console.log(res2);
   });
 
-  it("after does not work", async function () {
-    var res = await adminClient.query(
-      Paginate(
-        Join(
-          Match(Index("things_by_selectMe")),
-          Lambda("ref", Match(Index("all_things")))
-        ),
-        { size: 5 }
+  it("workaround", async function () {
+    var res = await handlePromiseError(
+      adminClient.query(
+        Paginate(
+          Let(
+            {
+              binding_set: Match(Index("things_binding")),
+              page: Select(
+                "data",
+                Paginate(Var("binding_set"), { size: 100000 })
+              ),
+              leaf_sets: Map(
+                Var("page"),
+                Lambda(
+                  ["selectMe", "ref"],
+                  Match(Index("things_by_selectMe"), Var("selectMe"))
+                )
+              ),
+              uni: Union(Var("leaf_sets")),
+            },
+            Var("uni")
+          )
+        )
       )
     );
-    /*
-           this returns
-           {
-         after: [
-           'hi4',
-           Ref(Collection("things"), "342139790713421900"),
-           Ref(Collection("things"), "342139790713421900")
-         ],
-         data: [
-           [ 'hi9', Ref(Collection("things"), "342139791030091852") ],
-           [ 'hi8', Ref(Collection("things"), "342139790964031564") ],
-           [ 'hi7', Ref(Collection("things"), "342139790905311308") ],
-           [ 'hi6', Ref(Collection("things"), "342139790838202444") ],
-           [ 'hi5', Ref(Collection("things"), "342139790781579340") ]
-         ]
-       }
-    */
-
     console.log(res);
-
-    var after = res.after[0];
-    var res2 = await adminClient.query(
-      Paginate(
-        Join(
-          Match(Index("things_by_selectMe")),
-          Lambda("ref", Match(Index("all_things")))
-        ),
-        { size: 5, after: after }
-      )
-    );
-           /*this does not return the next 5 docs:
-           {
-         before: [ 'hi4' ],
-         after: [
-           'hi4',
-           Ref(Collection("things"), "342139790713421900"),
-           Ref(Collection("things"), "342139790713421900")
-         ],
-         data: [
-           [ 'hi9', Ref(Collection("things"), "342139791030091852") ],
-           [ 'hi8', Ref(Collection("things"), "342139790964031564") ],
-           [ 'hi7', Ref(Collection("things"), "342139790905311308") ],
-           [ 'hi6', Ref(Collection("things"), "342139790838202444") ],
-           [ 'hi5', Ref(Collection("things"), "342139790781579340") ]
-         ]
-       }
-    */
-
-    console.log(res2);
   });
 });
 
@@ -100,6 +67,18 @@ import * as chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { generalTestSetup } from "./support/testDBSetup.js";
 import faunadb from "faunadb";
+import { handlePromiseError } from "./support/errors.js";
 const q = faunadb.query;
-const { Create, Collection, Paginate, Match, Index, Join, Lambda } =
-  faunadb.query;
+const {
+  Create,
+  Collection,
+  Paginate,
+  Match,
+  Index,
+  Let,
+  Lambda,
+  Map,
+  Select,
+  Var,
+  Union,
+} = faunadb.query;

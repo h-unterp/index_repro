@@ -18,7 +18,7 @@ const CreateThingsCollection = CreateCollection({
 });
 
 export const CreateIndexThingsSelect = CreateIndex({
-  name: "things_by_selectMe",
+  name: "things_binding",
   source: [
     {
       collection: Collection("things"),
@@ -41,10 +41,15 @@ export const CreateIndexThingsSelect = CreateIndex({
 });
 
 export const CreateIndexThings = CreateIndex({
-  name: "all_things",
+  name: "things_by_selectMe",
   source: [
     {
       collection: Collection("things"),
+    },
+  ],
+  terms: [
+    {
+      field: ["data", "selectMe"],
     },
   ],
   values: [
@@ -59,7 +64,7 @@ export const createThingsCollection = async function (client) {
     If(Exists(Collection("things")), true, CreateThingsCollection)
   );
   await client.query(
-    If(Exists(Index("things_by_selectMe")), true, CreateIndexThingsSelect)
+    If(Exists(Index("things_binding")), true, CreateIndexThingsSelect)
   );
-  await client.query(If(Exists(Index("all_things")), true, CreateIndexThings));
+  await client.query(If(Exists(Index("things_by_selectMe")), true, CreateIndexThings));
 };

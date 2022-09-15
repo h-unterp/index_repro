@@ -2,22 +2,12 @@
   "name": "index_repro",
   "type": "module",
   "scripts": {
-    "// ****** test repro ******": "",
-    "test:repro": "mocha --timeout 10000 --bail --reporter spec 'test.spec.js'",
-    "testSetup:repro": "mocha --timeout 60000 --bail --reporter spec 'test.spec.js' --setup",
-    "testFullSetup:repro": "mocha --timeout 200000 --bail --reporter spec 'test.spec.js' --fullSetup"
-  },
-
+},
   "main": "lib/index.js",
   "dependencies": {
     "faunadb": "^4.5.4"
   },
   "devDependencies": {
-    "chai": "^4.3.6",
-    "chai-as-promised": "^7.1.1",
-    "dotenv": "^16.0.1",
-    "mocha": "^10.0.0",
-    "t-minus-logger": "^1.1.2",
-    "minimist": "^1.2.6"
+    "@types/node": "^18.7.18"
   }
 }
